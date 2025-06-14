@@ -115,33 +115,6 @@ const Index = () => {
               </Button>
             </div>
           </section>
-
-          {/* Status Section */}
-          {(emailLoggedIn || tmsLoggedIn || telegramBotConfigured) && (
-            <section className="bg-brand-card backdrop-blur-sm border border-brand-green/20 rounded-2xl p-8">
-              <h2 className="text-brand-light text-2xl font-bold mb-6">Connection Status</h2>
-              <div className="space-y-4">
-                {emailLoggedIn && (
-                  <div className="flex items-center gap-3 text-brand-light">
-                    <CheckCircle className="w-5 h-5 text-brand-green" />
-                    <span>Email service connected successfully</span>
-                  </div>
-                )}
-                {tmsLoggedIn && (
-                  <div className="flex items-center gap-3 text-brand-light">
-                    <CheckCircle className="w-5 h-5 text-brand-green" />
-                    <span>TMS system connected successfully</span>
-                  </div>
-                )}
-                {telegramBotConfigured && (
-                  <div className="flex items-center gap-3 text-brand-light">
-                    <CheckCircle className="w-5 h-5 text-brand-green" />
-                    <span>Telegram bot configured successfully</span>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
         </div>
       </main>
       
