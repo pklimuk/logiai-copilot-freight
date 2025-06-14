@@ -2,9 +2,7 @@
 import { useState } from "react";
 import { Mail, Database, MessageCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
 import TelegramBotModal from "@/components/TelegramBotModal";
-import Footer from "@/components/Footer";
 
 const Index = () => {
   const [emailLoggedIn, setEmailLoggedIn] = useState(false);
@@ -40,8 +38,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-brand-dark">
-      <Header />
-      
       <main className="flex-1 px-12 py-16">
         <div className="max-w-4xl mx-auto">
           {/* Hero Section */}
@@ -148,8 +144,6 @@ const Index = () => {
           )}
         </div>
       </main>
-
-      <Footer />
       
       <TelegramBotModal
         isOpen={telegramModalOpen}
