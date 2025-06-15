@@ -13,7 +13,7 @@ const Login = () => {
   const [authMessage, setAuthMessage] = useState("");
   const navigate = useNavigate();
 
-  const backendUrl = "http://localhost:8000"; // Your FastAPI backend URL
+  const auth_api = "http://localhost:8099"; // Your FastAPI backend URL
 
   // Check for OAuth callback parameters
   useEffect(() => {
@@ -34,7 +34,7 @@ const Login = () => {
     setIsLoading(true);
     setAuthMessage("Redirecting to Google login...");
     // Redirect to backend's /authorize endpoint
-    window.location.href = `${backendUrl}/authorize`;
+    window.location.href = `${auth_api}/authorize`;
   };
 
   const handleDefaultLogin = (e: React.FormEvent) => {
