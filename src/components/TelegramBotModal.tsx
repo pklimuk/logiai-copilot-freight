@@ -27,13 +27,8 @@ const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalPro
       setBotLink(generatedLink);
       setIsCreating(false);
       
-      // After showing the link for a moment, complete the process
-      setTimeout(() => {
-        onBotCreated({ name: botName, profilePicture: "" });
-        // Reset form
-        setBotName("");
-        setBotLink("");
-      }, 2000);
+      // Call onBotCreated immediately after link is generated
+      onBotCreated({ name: botName, profilePicture: "" });
     }, 2000);
   };
 
