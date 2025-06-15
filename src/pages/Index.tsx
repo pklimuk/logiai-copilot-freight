@@ -25,7 +25,7 @@ const Index = () => {
   const handleTelegramBotCreated = (botData: { name: string; profilePicture: string }) => {
     console.log("Telegram bot configured:", botData);
     setTelegramBotConfigured(true);
-    setTelegramModalOpen(false);
+    setTelegramModalOpen(true);
   };
 
   return (
