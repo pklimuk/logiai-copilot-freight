@@ -1,52 +1,14 @@
+
 import { useState, useEffect } from "react";
-import { Mail, Database, MessageCircle, CheckCircle } from "lucide-react";
+import { Database, MessageCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TelegramBotModal from "@/components/TelegramBotModal";
 
 const Index = () => {
-  const [emailLoggedIn, setEmailLoggedIn] = useState(false);
   const [tmsLoggedIn, setTmsLoggedIn] = useState(false);
   const [telegramModalOpen, setTelegramModalOpen] = useState(false);
   const [telegramBotConfigured, setTelegramBotConfigured] = useState(false);
-  const [authMessage, setAuthMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const backendUrl = "http://localhost:8000"; // Your FastAPI backend URL
-
-  const checkAuthStatus = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/check_auth_status`);
-      const data = await response.json();
-      setEmailLoggedIn(data.authenticated);
-      return data.authenticated;
-    } catch (error) {
-      console.error("Error checking auth status:", error);
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    // Check authentication status on component mount
-    const initAuth = async () => {
-      setIsLoading(true);
-      const isAuthenticated = await checkAuthStatus();
-      setIsLoading(false);
-      
-      if (isAuthenticated) {
-        setAuthMessage("Successfully authenticated with Gmail");
-        setTimeout(() => setAuthMessage(""), 3000);
-      }
-    };
-    
-    initAuth();
-  }, []);
-
-  const handleEmailLogin = () => {
-    setIsLoading(true);
-    setAuthMessage("Redirecting to Google login...");
-    // Redirect to backend's /authorize endpoint
-    window.location.href = `${backendUrl}/authorize`;
-  };
+  const [emailLoggedIn, setEmailLoggedIn] = useState(true); // Assume logged in since they reached this page
 
   const handleTMSLogin = () => {
     console.log("TMS login clicked");
@@ -78,36 +40,14 @@ const Index = () => {
             <p className="text-brand-light/80 text-xl max-w-2xl mx-auto">
               Connect your services to get started with AI-powered logistics automation
             </p>
-            {authMessage && (
-              <p className={`mt-4 text-lg ${authMessage.includes("Successfully") ? "text-brand-green" : "text-brand-light"}`}>
-                {authMessage}
-              </p>
-            )}
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <CheckCircle className="w-5 h-5 text-brand-green" />
+              <span className="text-brand-green">Email Connected</span>
+            </div>
           </section>
 
-          {/* Login Cards */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {/* Email Login Card */}
-            <div className="value-card text-center">
-              <div className="flex justify-center mb-6">
-                {emailLoggedIn ? (
-                  <CheckCircle className="w-16 h-16 text-brand-green stroke-[2]" />
-                ) : (
-                  <Mail className="w-16 h-16 text-brand-green stroke-[2]" />
-                )}
-              </div>
-              <h3 className="text-brand-light text-xl font-normal leading-8 tracking-tight mb-6">
-                {emailLoggedIn ? "Email Connected" : "Connect Email"}
-              </h3>
-              <Button
-                onClick={handleEmailLogin}
-                disabled={emailLoggedIn || isLoading}
-                className={`w-full ${emailLoggedIn || isLoading ? "btn-primary opacity-50" : "btn-primary"}`}
-              >
-                {isLoading ? "Loading..." : emailLoggedIn ? "Connected" : "Login with Gmail"}
-              </Button>
-            </div>
-
+          {/* Setup Cards */}
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             {/* TMS Login Card */}
             <div className="value-card text-center">
               <div className="flex justify-center mb-6">
