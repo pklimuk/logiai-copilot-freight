@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bot } from "lucide-react";
 import { Link } from "lucide-react";
+
+const mcp_api = "http://localhost:8000";
 
 interface TelegramBotModalProps {
   isOpen: boolean;
@@ -38,19 +39,39 @@ const TelegramBotModal = ({
     setIsCreating(false);
   }, [isOpen, propBotLink, propBotName]);
 
+  // Function to call external API to create Telegram bot
+  async function createTelegramBot(botName: string): Promise<{ name: string; link: string }> {
+    // Replace with your actual API endpoint
+    const apiUrl = mcp_api + "/set_tg_bot_name/" + encodeURIComponent(botName);
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: botName }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to create Telegram bot");
+    }
+    return response.json();
+  }
+
   const handleCreateBot = async () => {
     if (!botNameInput.trim()) return;
 
     setIsCreating(true);
-
-    setTimeout(() => {
-      const generatedLink = `https://t.me/${botNameInput.toLowerCase().replace(/\s+/g, "_")}_bot`;
-      setBotLink(generatedLink);
+    try {
+      // Call the external API to create the bot
+      const botData = await createTelegramBot(botNameInput);
+      setBotLink(botData.link);
       setIsCreating(false);
-
-      onBotCreated({ name: botNameInput, link: generatedLink });
+      onBotCreated(botData);
       // Modal remains open to show details after creation
-    }, 2000);
+    } catch (error) {
+      setIsCreating(false);
+      // Optionally handle error (e.g., show toast or error message)
+      console.error(error);
+    }
   };
 
   const handleClose = () => {
