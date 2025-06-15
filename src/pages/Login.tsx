@@ -9,7 +9,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   // Read auth_api from .env via Vite
-  const auth_api = import.meta.env.VITE_AUTH_API;
+  const auth_api = import.meta.env.VITE_AUTH_API || "http://localhost:8099";
 
   // Check for OAuth callback parameters
   useEffect(() => {
