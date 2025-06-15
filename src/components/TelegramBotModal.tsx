@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Bot } from "lucide-react";
 import { Link } from "lucide-react";
 
 const mcp_api = "http://localhost:8000";
+const HARDCODED_BOT_LINK = "https://t.me/your_bot_name"; // Replace with your actual bot link
 
 interface TelegramBotModalProps {
   isOpen: boolean;
@@ -47,8 +47,7 @@ const TelegramBotModal = ({
   }, [isOpen, propBotLink, propBotName]);
 
   // Function to call external API to create Telegram bot
-  async function createTelegramBot(botName: string): Promise<{ name: string; link: string }> {
-    // Replace with your actual API endpoint
+  async function createTelegramBot(botName: string): Promise<boolean> {
     const apiUrl = mcp_api + "/set_tg_bot_name/" + encodeURIComponent(botName);
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -57,10 +56,9 @@ const TelegramBotModal = ({
       },
       body: JSON.stringify({ name: botName }),
     });
-    if (!response.ok) {
-      throw new Error("Failed to create Telegram bot");
-    }
-    return response.json();
+    
+    // Only care about HTTP status, not the response data
+    return response.status === 200;
   }
 
   const handleCreateBot = async () => {
@@ -69,21 +67,25 @@ const TelegramBotModal = ({
     setIsCreating(true);
     try {
       // Call the external API to create the bot
-      const botData = await createTelegramBot(botNameInput);
+      const success = await createTelegramBot(botNameInput);
       
-      // Update local state to show details view
-      setBotLink(botData.link);
-      setBotName(botData.name);
-      setIsCreating(false);
-      
-      // Notify parent component
-      onBotCreated(botData);
-      
-      // Modal will now show details view due to updated local state
+      if (success) {
+        // Update local state to show details view with hardcoded link
+        setBotLink(HARDCODED_BOT_LINK);
+        setBotName(botNameInput);
+        setIsCreating(false);
+        
+        // Notify parent component with hardcoded data
+        onBotCreated({ name: botNameInput, link: HARDCODED_BOT_LINK });
+        
+        // Modal will now show details view due to updated local state
+      } else {
+        setIsCreating(false);
+        console.error("API call failed - non-200 response");
+      }
     } catch (error) {
       setIsCreating(false);
-      // Optionally handle error (e.g., show toast or error message)
-      console.error(error);
+      console.error("API call failed:", error);
     }
   };
 
