@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,21 @@ const Login = () => {
   const navigate = useNavigate();
 
   const backendUrl = "http://localhost:8000"; // Your FastAPI backend URL
+
+  // Check for OAuth callback parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    
+    if (code) {
+      // OAuth callback detected, redirect to dashboard
+      setAuthMessage("Login successful! Redirecting...");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    }
+  }, [navigate]);
 
   const handleGmailLogin = () => {
     setIsLoading(true);
