@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,8 @@ const Login = () => {
   const [authMessage, setAuthMessage] = useState("");
   const navigate = useNavigate();
 
-  const auth_api = "http://localhost:8099"; // Your FastAPI backend URL
+  // Read auth_api from .env via Vite
+  const auth_api = import.meta.env.VITE_AUTH_API;
 
   // Check for OAuth callback parameters
   useEffect(() => {
