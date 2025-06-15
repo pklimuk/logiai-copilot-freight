@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -26,16 +27,22 @@ const TelegramBotModal = ({
   const [botNameInput, setBotNameInput] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [botLink, setBotLink] = useState<string>("");
+  const [botName, setBotName] = useState<string>("");
 
-  // Show detail view if props are set
-  const showBotDetails = !!propBotLink && !!propBotName;
+  // Show detail view if props are set OR if local state has bot data
+  const showBotDetails = !!(propBotLink && propBotName) || !!(botLink && botName);
 
   useEffect(() => {
     // If receiving bot info as props, ensure the local state matches for display
     if (propBotLink) setBotLink(propBotLink);
     else setBotLink("");
-    if (propBotName) setBotNameInput(propBotName);
-    else setBotNameInput("");
+    if (propBotName) {
+      setBotNameInput(propBotName);
+      setBotName(propBotName);
+    } else {
+      setBotNameInput("");
+      setBotName("");
+    }
     setIsCreating(false);
   }, [isOpen, propBotLink, propBotName]);
 
@@ -63,10 +70,16 @@ const TelegramBotModal = ({
     try {
       // Call the external API to create the bot
       const botData = await createTelegramBot(botNameInput);
+      
+      // Update local state to show details view
       setBotLink(botData.link);
+      setBotName(botData.name);
       setIsCreating(false);
+      
+      // Notify parent component
       onBotCreated(botData);
-      // Modal remains open to show details after creation
+      
+      // Modal will now show details view due to updated local state
     } catch (error) {
       setIsCreating(false);
       // Optionally handle error (e.g., show toast or error message)
@@ -77,6 +90,7 @@ const TelegramBotModal = ({
   const handleClose = () => {
     setBotNameInput("");
     setBotLink("");
+    setBotName("");
     setIsCreating(false);
     onClose();
   };
@@ -90,7 +104,7 @@ const TelegramBotModal = ({
             Configure Telegram Bot
           </DialogTitle>
         </DialogHeader>
-        {(botLink || showBotDetails) ? (
+        {showBotDetails ? (
           <div className="space-y-6 py-4">
             <div className="text-center">
               <div className="w-16 h-16 bg-brand-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -126,7 +140,7 @@ const TelegramBotModal = ({
                   Bot Name:
                 </Label>
                 <div className="mt-1 text-brand-light font-semibold">
-                  {propBotName || botNameInput}
+                  {propBotName || botName}
                 </div>
               </div>
             </div>
