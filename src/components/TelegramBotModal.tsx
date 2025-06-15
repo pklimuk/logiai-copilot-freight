@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Bot } from "lucide-react";
+import { Bot } from "lucide-react";
 
 interface TelegramBotModalProps {
   isOpen: boolean;
@@ -14,7 +13,6 @@ interface TelegramBotModalProps {
 
 const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalProps) => {
   const [botName, setBotName] = useState("");
-  const [profilePicture, setProfilePicture] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [botLink, setBotLink] = useState("");
 
@@ -31,10 +29,9 @@ const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalPro
       
       // After showing the link for a moment, complete the process
       setTimeout(() => {
-        onBotCreated({ name: botName, profilePicture });
+        onBotCreated({ name: botName, profilePicture: "" });
         // Reset form
         setBotName("");
-        setProfilePicture("");
         setBotLink("");
       }, 2000);
     }, 2000);
@@ -42,7 +39,6 @@ const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalPro
 
   const handleClose = () => {
     setBotName("");
-    setProfilePicture("");
     setBotLink("");
     setIsCreating(false);
     onClose();
@@ -98,26 +94,6 @@ const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalPro
                   placeholder="Enter bot name"
                   className="bg-brand-dark border-brand-green/20 text-brand-light mt-2"
                 />
-              </div>
-              
-              <div>
-                <Label htmlFor="profilePicture" className="text-brand-light">Profile Picture URL (Optional)</Label>
-                <div className="flex gap-2 mt-2">
-                  <Input
-                    id="profilePicture"
-                    value={profilePicture}
-                    onChange={(e) => setProfilePicture(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    className="bg-brand-dark border-brand-green/20 text-brand-light"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-brand-green hover:bg-brand-green/20"
-                  >
-                    <Upload className="w-4 h-4" />
-                  </Button>
-                </div>
               </div>
             </div>
             
