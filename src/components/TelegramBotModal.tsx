@@ -7,7 +7,7 @@ import { Bot } from "lucide-react";
 import { Link } from "lucide-react";
 
 const mcp_api = "http://localhost:8000";
-const HARDCODED_BOT_LINK = "https://t.me/your_bot_name"; // Replace with your actual bot link
+const HARDCODED_BOT_LINK = "https://t.me/copilot_3pl_bot";
 
 interface TelegramBotModalProps {
   isOpen: boolean;
