@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Database, MessageCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TelegramBotModal from "@/components/TelegramBotModal";
@@ -9,13 +8,44 @@ const Index = () => {
   const [tmsLoggedIn, setTmsLoggedIn] = useState(false);
   const [telegramModalOpen, setTelegramModalOpen] = useState(false);
   const [telegramBotConfigured, setTelegramBotConfigured] = useState(false);
+  const [authMessage, setAuthMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const backendUrl = "http://localhost:8000"; // Your FastAPI backend URL
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/check_auth_status`);
+      const data = await response.json();
+      setEmailLoggedIn(data.authenticated);
+      return data.authenticated;
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    // Check authentication status on component mount
+    const initAuth = async () => {
+      setIsLoading(true);
+      const isAuthenticated = await checkAuthStatus();
+      setIsLoading(false);
+      
+      if (isAuthenticated) {
+        setAuthMessage("Successfully authenticated with Gmail");
+        setTimeout(() => setAuthMessage(""), 3000);
+      }
+    };
+    
+    initAuth();
+  }, []);
 
   const handleEmailLogin = () => {
-    console.log("Email login clicked");
-    // Simulate login process
-    setTimeout(() => {
-      setEmailLoggedIn(true);
-    }, 1000);
+    setIsLoading(true);
+    setAuthMessage("Redirecting to Google login...");
+    // Redirect to backend's /authorize endpoint
+    window.location.href = `${backendUrl}/authorize`;
   };
 
   const handleTMSLogin = () => {
@@ -48,6 +78,11 @@ const Index = () => {
             <p className="text-brand-light/80 text-xl max-w-2xl mx-auto">
               Connect your services to get started with AI-powered logistics automation
             </p>
+            {authMessage && (
+              <p className={`mt-4 text-lg ${authMessage.includes("Successfully") ? "text-brand-green" : "text-brand-light"}`}>
+                {authMessage}
+              </p>
+            )}
           </section>
 
           {/* Login Cards */}
@@ -66,10 +101,10 @@ const Index = () => {
               </h3>
               <Button
                 onClick={handleEmailLogin}
-                disabled={emailLoggedIn}
-                className={`w-full ${emailLoggedIn ? 'btn-primary opacity-50' : 'btn-primary'}`}
+                disabled={emailLoggedIn || isLoading}
+                className={`w-full ${emailLoggedIn || isLoading ? "btn-primary opacity-50" : "btn-primary"}`}
               >
-                {emailLoggedIn ? "Connected" : "Login with Gmail"}
+                {isLoading ? "Loading..." : emailLoggedIn ? "Connected" : "Login with Gmail"}
               </Button>
             </div>
 
@@ -88,7 +123,7 @@ const Index = () => {
               <Button
                 onClick={handleTMSLogin}
                 disabled={tmsLoggedIn}
-                className={`w-full ${tmsLoggedIn ? 'btn-primary opacity-50' : 'btn-primary'}`}
+                className={`w-full ${tmsLoggedIn ? "btn-primary opacity-50" : "btn-primary"}`}
               >
                 {tmsLoggedIn ? "Connected" : "Login to TMS"}
               </Button>
@@ -109,7 +144,7 @@ const Index = () => {
               <Button
                 onClick={handleTelegramConfig}
                 disabled={telegramBotConfigured}
-                className={`w-full ${telegramBotConfigured ? 'btn-primary opacity-50' : 'btn-primary'}`}
+                className={`w-full ${telegramBotConfigured ? "btn-primary opacity-50" : "btn-primary"}`}
               >
                 {telegramBotConfigured ? "Configured" : "Setup Bot"}
               </Button>
