@@ -60,7 +60,7 @@ const Login = () => {
             Sign in to access your logistics dashboard
           </p>
           {authMessage && (
-            <p className="mt-4 text-lg text-brand-light">
+            <p className="mt-4 text-lg text-brand-light/70">
               {authMessage}
             </p>
           )}
@@ -91,7 +91,7 @@ const Login = () => {
         {/* Default Login Form */}
         <form onSubmit={handleDefaultLogin} className="space-y-4">
           <div>
-            <Label htmlFor="email" className="text-brand-light">
+            <Label htmlFor="email" className="text-brand-light/80">
               Email
             </Label>
             <Input
@@ -106,7 +106,7 @@ const Login = () => {
           </div>
 
           <div>
-            <Label htmlFor="password" className="text-brand-light">
+            <Label htmlFor="password" className="text-brand-light/80">
               Password
             </Label>
             <Input
