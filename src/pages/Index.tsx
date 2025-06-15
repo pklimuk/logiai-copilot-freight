@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Database, MessageCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TelegramBotModal from "@/components/TelegramBotModal";
@@ -8,11 +8,12 @@ const Index = () => {
   const [tmsLoggedIn, setTmsLoggedIn] = useState(false);
   const [telegramModalOpen, setTelegramModalOpen] = useState(false);
   const [telegramBotConfigured, setTelegramBotConfigured] = useState(false);
-  const [emailLoggedIn, setEmailLoggedIn] = useState(true); // Assume logged in since they reached this page
+  const [telegramBotName, setTelegramBotName] = useState<string | null>(null);
+  const [telegramBotLink, setTelegramBotLink] = useState<string | null>(null);
+  const [emailLoggedIn] = useState(true); // Assume logged in since they reached this page
 
   const handleTMSLogin = () => {
     console.log("TMS login clicked");
-    // Simulate login process
     setTimeout(() => {
       setTmsLoggedIn(true);
     }, 1000);
@@ -22,9 +23,15 @@ const Index = () => {
     setTelegramModalOpen(true);
   };
 
-  const handleTelegramBotCreated = (botData: { name: string; profilePicture: string }) => {
-    console.log("Telegram bot configured:", botData);
+  const handleTelegramBotCreated = (botData: { name: string; link: string }) => {
+    setTelegramBotName(botData.name);
+    setTelegramBotLink(botData.link);
     setTelegramBotConfigured(true);
+    setTelegramModalOpen(true); // Keep modal open to show details after creation
+  };
+
+  const handleConfiguredBotClick = () => {
+    // Should open modal with stored bot data
     setTelegramModalOpen(true);
   };
 
@@ -70,7 +77,11 @@ const Index = () => {
             </div>
 
             {/* Telegram Bot Config Card */}
-            <div className="value-card text-center">
+            <div
+              className={`value-card text-center ${telegramBotConfigured ? "cursor-pointer hover:ring-2 ring-brand-green/40 transition" : ""}`}
+              onClick={telegramBotConfigured ? handleConfiguredBotClick : undefined}
+              aria-disabled={!telegramBotConfigured}
+            >
               <div className="flex justify-center mb-6">
                 {telegramBotConfigured ? (
                   <CheckCircle className="w-16 h-16 text-brand-green stroke-[2]" />
@@ -88,15 +99,21 @@ const Index = () => {
               >
                 {telegramBotConfigured ? "Configured" : "Setup Bot"}
               </Button>
+              {telegramBotConfigured && (
+                <div className="mt-2 text-brand-green/80 text-sm">
+                  Click to view details
+                </div>
+              )}
             </div>
           </section>
         </div>
       </main>
-      
       <TelegramBotModal
         isOpen={telegramModalOpen}
         onClose={() => setTelegramModalOpen(false)}
-        onBotCreated={handleTelegramBotCreated}
+        onBotCreated={({ name, link }) => handleTelegramBotCreated({ name, link })}
+        botName={telegramBotName ?? undefined}
+        botLink={telegramBotLink ?? undefined}
       />
     </div>
   );

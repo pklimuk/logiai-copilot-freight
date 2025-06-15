@@ -1,39 +1,60 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bot } from "lucide-react";
+import { Link } from "lucide-react";
 
 interface TelegramBotModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onBotCreated: (botData: { name: string; profilePicture: string }) => void;
+  onBotCreated: (botData: { name: string; link: string }) => void;
+  botName?: string;
+  botLink?: string;
 }
 
-const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalProps) => {
-  const [botName, setBotName] = useState("");
+const TelegramBotModal = ({
+  isOpen,
+  onClose,
+  onBotCreated,
+  botName: propBotName,
+  botLink: propBotLink,
+}: TelegramBotModalProps) => {
+  const [botNameInput, setBotNameInput] = useState("");
   const [isCreating, setIsCreating] = useState(false);
-  const [botLink, setBotLink] = useState("");
+  const [botLink, setBotLink] = useState<string>("");
+
+  // Show detail view if props are set
+  const showBotDetails = !!propBotLink && !!propBotName;
+
+  useEffect(() => {
+    // If receiving bot info as props, ensure the local state matches for display
+    if (propBotLink) setBotLink(propBotLink);
+    else setBotLink("");
+    if (propBotName) setBotNameInput(propBotName);
+    else setBotNameInput("");
+    setIsCreating(false);
+  }, [isOpen, propBotLink, propBotName]);
 
   const handleCreateBot = async () => {
-    if (!botName.trim()) return;
-    
+    if (!botNameInput.trim()) return;
+
     setIsCreating(true);
-    
-    // Simulate backend API call
+
     setTimeout(() => {
-      const generatedLink = `https://t.me/${botName.toLowerCase().replace(/\s+/g, '_')}_bot`;
+      const generatedLink = `https://t.me/${botNameInput.toLowerCase().replace(/\s+/g, "_")}_bot`;
       setBotLink(generatedLink);
       setIsCreating(false);
-      
-      // Call onBotCreated immediately after link is generated
-      onBotCreated({ name: botName, profilePicture: "" });
+
+      onBotCreated({ name: botNameInput, link: generatedLink });
+      // Modal remains open to show details after creation
     }, 2000);
   };
 
   const handleClose = () => {
-    setBotName("");
+    setBotNameInput("");
     setBotLink("");
     setIsCreating(false);
     onClose();
@@ -48,31 +69,43 @@ const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalPro
             Configure Telegram Bot
           </DialogTitle>
         </DialogHeader>
-        
-        {botLink ? (
+        {(botLink || showBotDetails) ? (
           <div className="space-y-6 py-4">
             <div className="text-center">
               <div className="w-16 h-16 bg-brand-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Bot className="w-8 h-8 text-brand-green" />
               </div>
               <h3 className="text-lg font-semibold text-brand-light mb-2">Bot Created Successfully!</h3>
-              <p className="text-brand-light/80 mb-4">Your Telegram bot is ready to use.</p>
+              <p className="text-brand-light/80 mb-4">
+                Your Telegram bot is ready to use.
+              </p>
               <div className="bg-brand-card border border-brand-green/20 rounded-lg p-4">
-                <Label className="text-sm text-brand-light/80">Bot Link:</Label>
+                <Label className="text-sm text-brand-light/80 flex items-center gap-2">
+                  <Link className="inline w-4 h-4 mr-1 text-brand-green" />
+                  Bot Link:
+                </Label>
                 <div className="flex items-center gap-2 mt-2">
                   <Input
-                    value={botLink}
+                    value={botLink || propBotLink || ""}
                     readOnly
                     className="bg-brand-dark border-brand-green/20 text-brand-light"
                   />
                   <Button
-                    onClick={() => navigator.clipboard.writeText(botLink)}
+                    onClick={() => navigator.clipboard.writeText(botLink || propBotLink || "")}
                     variant="ghost"
                     size="sm"
                     className="text-brand-green hover:bg-brand-green/20"
                   >
                     Copy
                   </Button>
+                </div>
+              </div>
+              <div className="mt-4">
+                <Label className="text-sm text-brand-light/80">
+                  Bot Name:
+                </Label>
+                <div className="mt-1 text-brand-light font-semibold">
+                  {propBotName || botNameInput}
                 </div>
               </div>
             </div>
@@ -84,14 +117,13 @@ const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalPro
                 <Label htmlFor="botName" className="text-brand-light">Bot Name</Label>
                 <Input
                   id="botName"
-                  value={botName}
-                  onChange={(e) => setBotName(e.target.value)}
+                  value={botNameInput}
+                  onChange={(e) => setBotNameInput(e.target.value)}
                   placeholder="Enter bot name"
                   className="bg-brand-dark border-brand-green/20 text-brand-light mt-2"
                 />
               </div>
             </div>
-            
             <div className="flex gap-3">
               <Button
                 onClick={handleClose}
@@ -102,7 +134,7 @@ const TelegramBotModal = ({ isOpen, onClose, onBotCreated }: TelegramBotModalPro
               </Button>
               <Button
                 onClick={handleCreateBot}
-                disabled={!botName.trim() || isCreating}
+                disabled={!botNameInput.trim() || isCreating}
                 className="flex-1 btn-primary"
               >
                 {isCreating ? "Creating..." : "Create Bot"}
